@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ include "huggingface-model.fullname" . }}
+spec:
+  accessModes: {{ .Values.persistence.accessModes | toYaml | nindent 4 }}
+  storageClassName: {{ .Values.persistence.storageClassName }}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.storage }}

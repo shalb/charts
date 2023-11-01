@@ -1,0 +1,30 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - '*'
+
+env:
+  REGISTRY_URL: registry-1.docker.io
+  REGISTRY_REPO: shalb/charts
+
+jobs:
+  release:
+    name: Release helm charts
+    runs-on: ubuntu-latest
+    container: alpine/helm:3.12.0
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set env
+      run: |
+        echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+
+    - name: Build and push
+      run: |
+        echo ${{ secrets.DOCKERHUB_TOKEN }} | helm registry login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin ${{ env.REGISTRY_URL}}
+        for CHART_NAME in $(find -maxdepth 2 -type f -name "Chart.yaml" | cut -d"/" -f2); do
+          helm package --version ${{ env.RELEASE_VERSION }} ${CHART_NAME}
+          helm push ${CHART_NAME}-${{ env.RELEASE_VERSION }}.tgz oci://${{ env.REGISTRY_URL}}/${{ env.REGISTRY_REPO}}
+        done

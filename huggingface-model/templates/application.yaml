@@ -1,0 +1,125 @@
+{{- if or ( not .Values.model ) ( or (not .Values.model.name) (not .Values.model.organization) ) -}}
+{{- fail "model.name and model.id are required but not set!" -}}
+{{- end }}
+{{- $kind := .Values.kind | default "deployment" }}
+{{- $namePrefix := include "huggingface-model.fullname" . | trunc 63 | trimSuffix "-" -}}
+apiVersion: apps/v1
+kind: {{ $kind }}
+metadata:
+  annotations:
+    reloader.stakater.com/auto: "true"
+  name: {{ include "huggingface-model.fullname" . }}
+  labels:
+    {{- include "huggingface-model.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "huggingface-model.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "huggingface-model.selectorLabels" . | nindent 8 }}
+        {{- if .Values.pdb.create }}
+        pdbEnabled: {{ include "huggingface-model.fullname" . }}
+        {{- end }}
+    spec:
+      {{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- if eq $kind "StatefulSet" }}
+      serviceName: {{ include "huggingface-model.fullname" . }}
+      {{- end }}
+      {{- if .Values.serviceAccount.create }}
+      serviceAccountName: {{ include "huggingface-model.serviceAccountName" . }}
+      {{- end }}
+      {{- with .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- end }}
+      initContainers:
+        - name: init
+          image: alpine:3.18.4
+          imagePullPolicy: "IfNotPresent"
+          command: [ "/bin/sh", "-c" ]
+          args:
+            - if [ -d "/data/{{ .Values.model.name }}" ]; then echo "Model {{ .Values.model.id }} is already downloaded. Skipping init..."; exit 0; fi
+            {{- if and .Values.init.s3.enabled }}
+            - apk add --update aws-cli
+            - aws s3 cp --recursive {{ .Values.init.s3.bucketURL }} /data/{{ .Values.model.name }}
+            {{- else }}
+            - apk add --update git-lfs
+            - git clone --depth=1 https://huggingface.co/{{ .Values.model.id }}
+            {{- end }}
+          volumeMounts:
+            - name: model-storage
+              mountPath: /data
+          resources:
+            requests:
+              cpu: "3"
+      containers:
+        - name: model
+          image: {{ .Values.image.repo }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | default "IfNotPresent" }}
+          command: [ "text-generation-launcher" ]
+          args:
+            - "--model-id"
+            - "{{ .Values.model.id }}"
+            - "--huggingface-hub-cache"
+            - "/usr/src/{{ .Values.model.name }}"
+            - "--weights-cache-override"
+            - "/usr/src/{{ .Values.model.name }}"
+            {{- with .Values.huggingface.args }}
+            {{ toYaml . | indent 12 }}
+            {{- end }}
+          ports:
+            - containerPort: {{ include "huggingface-model.containerPort" . }}
+          env:
+            - name: PORT
+              value: {{ include "huggingface-model.containerPort" . }}
+            - name: HUGGINGFACE_OFFLINE
+              value: "1"
+            {{- with .Values.extraEnvVars }}
+            {{ toYaml . | nindent 12 }}
+            {{- end}}
+          {{- with .Values.livenessProbe }}
+          livenessProbe: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.readinessProbe }}
+          readinessProbe: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.startupProbe }}
+          startupProbe: {{ toYaml . | nindent 12 }}
+          {{- end }}
+          volumeMounts:
+            - name: model-storage
+              mountPath: /data
+          {{- with .Values.extraVolumeMounts}}
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      volumes:
+        - name: model-storage
+          persistentVolumeClaim:
+            claimName: {{ include "huggingface-model.fullname" . }}
+      {{- with .Values.extraVolumes }}
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
