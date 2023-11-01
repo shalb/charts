@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "huggingface-model.fullname" . }}
+  labels:
+    {{- include "huggingface-model.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port | default 8080 }}
+      targetPort: {{ include "huggingface-model.containerPort" . }}
+  selector:
+    {{- include "huggingface-model.selectorLabels" . | nindent 4 }}
