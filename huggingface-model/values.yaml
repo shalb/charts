@@ -46,9 +46,11 @@ replicaCount: 1
 kind: deployment
 
 ## Huggingface image
-## @param image.repo Huggingface image repo [default: ghcr.io/huggingface/text-generation-inference]
-## @param image.tag Huggingface image version [default: latest]
-## @param image.pullPolicy Huggingface image pull policy [default: IfNotPresent] ref: https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+## @param image.repo Huggingface image repo
+## @param image.tag Huggingface image version
+## @param image.pullPolicy Huggingface image pull policy
+## ref: https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+##
 image:
   repo: ghcr.io/huggingface/text-generation-inference
   tag: "latest"
