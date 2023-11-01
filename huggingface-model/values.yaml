@@ -1,8 +1,8 @@
 ## Huggingface model
 ## @section Model
 ## ref: https://huggingface.co/models
-## @param model.organization model's company name on huggingface, required!
-## @param model.name model name on huggingface, required!
+## @param model.organization Models' company name on huggingface, required!
+## @param model.name Models' name on huggingface, required!
 ## e.g. to deploy model https://huggingface.co/segmind/SSD-1B use configuration below:
 ## organization: segmind
 ## name: SSD-1B
@@ -13,8 +13,8 @@ model:
 
 ## Init configuration. By default, init clone model from huggingface git.
 ## The another way is to upload model to s3 bucket to reduce init delay and external traffic.
-## @param init.s3.enabled turn on/off s3 data source Default: disabled
-## @param init.s3.bucketURL full s3 URL included path to model's folder
+## @param init.s3.enabled Turn on/off s3 data source Default: disabled
+## @param init.s3.bucketURL Full s3 URL included path to model's folder
 ##
 init:
   s3:
@@ -22,11 +22,11 @@ init:
     bucketURL: s3://k8s-model-zephyr/llm/deployment/segmind/SSD-1B
 
 ## huggingface block configure running text-generation-launcher internal port and additional arguments
-## @param huggingface.containerPort optional, default 8080
+## @param huggingface.containerPort Deployment/StatefulSet ContainerPort, optional
 ##
 huggingface:
   containerPort: 8080
-  ## @param huggingface.args additional arg for text-generation-launcher optional, default []
+  ## @param huggingface.args Additional arg for text-generation-launcher optional
   ## e.g.
   ##  args:
   ##   - "--quantize"
@@ -37,16 +37,16 @@ huggingface:
   args: []
 
 ## @section Global
-## @param replicaCount default 1
+## @param replicaCount Deployment/StatefulSet replicaCount
 ##
 replicaCount: 1
 
-## @param kind main. Allowed values: deployment/StatefulSet, optional, default: deployment
+## @param kind Resource king [allowed values: deployment/StatefulSet, optional]
 ##
 kind: deployment
 
 ## Huggingface image
-## @param image.repo huggingface image repo [default: ghcr.io/huggingface/text-generation-inference]
+## @param image.repo Huggingface image repo [default: ghcr.io/huggingface/text-generation-inference]
 ## @param image.tag Huggingface image version [default: latest]
 ## @param image.pullPolicy Huggingface image pull policy [default: IfNotPresent] ref: https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
 image:
@@ -54,7 +54,7 @@ image:
   tag: "latest"
   pullPolicy: IfNotPresent
 
-## @param imagePullSecrets may need if used private repo as a cache for image ghcr.io/huggingface/text-generation-inference
+## @param imagePullSecrets May need if used private repo as a cache for image ghcr.io/huggingface/text-generation-inference
 #
 imagePullSecrets: []
 
@@ -68,9 +68,9 @@ fullnameOverride: ""
 
 ## Persistence parameters
 ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
-## @param persistence.accessModes pvc accessModes, default ["ReadWriteOnce"]
-## @param persistence.storageClassName k8s storageClass name, default gp2
-## @param persistence.storage volume size, default 100Gi
+## @param persistence.accessModes PVC accessModes
+## @param persistence.storageClassName Kubernetes storageClass name
+## @param persistence.storage Volume size
 ##
 persistence:
   accessModes:
@@ -80,8 +80,8 @@ persistence:
 
 ## Persistence parameters
 ## ref: https://kubernetes.io/docs/concepts/services-networking/
-## @param service.port pvc service port, default 8080
-## @param service.type service type, default ClusterIP
+## @param service.port Service port, default 8080
+## @param service.type Service type, default ClusterIP
 ##
 service:
   port: 8080
@@ -89,8 +89,8 @@ service:
 
 ## ServiceAccount parameters
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/configure-service-account/
-## @param serviceAccount.create enable/disable service account, default enabled
-## @param serviceAccount.role k8s role configuration, default nil
+## @param serviceAccount.create Enable/disable service account, default enabled
+## @param serviceAccount.role Kubernetes role configuration, default nil
 ##
 serviceAccount:
   create: true
@@ -133,13 +133,13 @@ securityContext: {}
 extraEnvVars: []
 
 ## Configure the ingresses resources list that allows you to access the model API
-## @param ingresses.enabled enable/disable ingress(es) for model API, default disabled
+## @param ingresses.enabled Enable/disable ingress(es) for model API, default disabled
 ##
 ingresses:
   enabled: false
   ## ingresses list
   ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
-  ## @param ingresses.configs list of ingresses configs
+  ## @param ingresses.configs List of ingresses configs
   ## e.g.
   ## configs:
   ## - annotations:
