@@ -30,12 +30,14 @@ jobs:
       run: |
         set -x
         git config --global --add safe.directory /__w/charts/charts
-        git show --pretty="" --name-only
+        git show --pretty="" --name-onlyZ
         echo ${{ secrets.DOCKERHUB_TOKEN }} | helm registry login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin ${{ env.REGISTRY_URL}}
-        for CHART_NAME in $(git show --pretty="" --name-only | grep Chart.yaml | cut -d"/" -f1); do
+        for CHART_NAME in $(git show --pretty="" --name-only | cut -d"/" -f1); do
           VERSION=$(cat ${CHART_NAME}/Chart.yaml | egrep "^version" | cut -d" " -f2)
-          echo "checking if version exists..."
+          echo "checking if Chart.yaml exists..."
           set +e
+          [ ! -f ${CHART_NAME}/Chart.yaml ] && [ ! -f ${CHART_NAME}/Chart.yml ] && exit 1
+          echo "checking if version exists..."
           helm pull oci://${{ env.REGISTRY_URL}}/${{ env.REGISTRY_REPO}}/${CHART_NAME} --version ${VERSION} && exit 1
           set -e
           echo "build and push"
