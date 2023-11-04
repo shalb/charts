@@ -31,7 +31,7 @@ jobs:
       run: |
         set -x
         echo ${{ secrets.DOCKERHUB_TOKEN }} | helm registry login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin ${{ env.REGISTRY_URL}}
-        for CHART_NAME in $(find -maxdepth 2 -type f -name "Chart.yaml" | cut -d"/" -f2); do
+        for CHART_NAME in $(git show --pretty="" --name-only | grep Chart.yaml | cut -d"/" -f1); do
           VERSION=$(cat ${CHART_NAME}/Chart.yaml | egrep "^version" | cut -d" " -f2)
           echo "checking if version exists..."
           set +e
