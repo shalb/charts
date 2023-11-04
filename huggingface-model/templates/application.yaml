@@ -1,7 +1,7 @@
 {{- if or ( not .Values.model ) ( or (not .Values.model.name) (not .Values.model.organization) ) -}}
 {{- fail "model.name and model.id are required but not set!" -}}
 {{- end }}
-{{- $kind := .Values.kind | default "deployment" }}
+{{- $kind := .Values.kind | default "Deployment" }}
 {{- $namePrefix := include "huggingface-model.fullname" . | trunc 63 | trimSuffix "-" -}}
 apiVersion: apps/v1
 kind: {{ $kind }}

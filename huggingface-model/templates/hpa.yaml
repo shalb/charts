@@ -1,5 +1,5 @@
 {{- if .Values.autoscaling.enabled }}
-{{- $kind := .Values.kind | default "deployment" }}
+{{- $kind := .Values.kind | default "Deployment" }}
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

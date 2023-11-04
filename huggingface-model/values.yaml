@@ -41,9 +41,9 @@ huggingface:
 ##
 replicaCount: 1
 
-## @param kind Resource king [allowed values: deployment/StatefulSet, optional]
+## @param kind Resource king [allowed values: Deployment/StatefulSet, optional]
 ##
-kind: deployment
+kind: Deployment
 
 ## Huggingface image
 ## @param image.repo Huggingface image repo
