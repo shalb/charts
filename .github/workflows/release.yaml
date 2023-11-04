@@ -30,7 +30,7 @@ jobs:
       run: |
         set -x
         git config --global --add safe.directory /__w/charts/charts
-        git show --pretty="" --name-onlyZ
+        git show --pretty="" --name-only | cut -d"/" -f1
         echo ${{ secrets.DOCKERHUB_TOKEN }} | helm registry login -u ${{ secrets.DOCKERHUB_USERNAME }} --password-stdin ${{ env.REGISTRY_URL}}
         for CHART_NAME in $(git show --pretty="" --name-only | cut -d"/" -f1); do
           VERSION=$(cat ${CHART_NAME}/Chart.yaml | egrep "^version" | cut -d" " -f2)
