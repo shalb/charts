@@ -81,7 +81,7 @@ spec:
             - containerPort: {{ include "huggingface-model.containerPort" . }}
           env:
             - name: PORT
-              value: {{ include "huggingface-model.containerPort" . }}
+              value: "{{ include "huggingface-model.containerPort" . }}"
             - name: HUGGINGFACE_OFFLINE
               value: "1"
             {{- with .Values.extraEnvVars }}
