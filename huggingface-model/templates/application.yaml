@@ -75,7 +75,7 @@ spec:
             - "--weights-cache-override"
             - "/usr/src/{{ .Values.model.name }}"
             {{- with .Values.huggingface.args }}
-            {{- toYaml . | nindent 12 }} # test
+            {{- toYaml . | nindent 12 }}
             {{- end }}
           ports:
             - containerPort: {{ include "huggingface-model.containerPort" . }}
