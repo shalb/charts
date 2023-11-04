@@ -36,7 +36,7 @@ jobs:
           VERSION=$(cat ${CHART_NAME}/Chart.yaml | egrep "^version" | cut -d" " -f2)
           echo "checking if Chart.yaml exists..."
           set +e
-          [ ! -f ${CHART_NAME}/Chart.yaml ] && [ ! -f ${CHART_NAME}/Chart.yml ] && exit 1
+          [ ! -f ${CHART_NAME}/Chart.yaml ] && [ ! -f ${CHART_NAME}/Chart.yml ] && continue
           echo "checking if version exists..."
           helm pull oci://${{ env.REGISTRY_URL}}/${{ env.REGISTRY_REPO}}/${CHART_NAME} --version ${VERSION} && exit 1
           set -e
