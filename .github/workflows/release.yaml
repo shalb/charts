@@ -36,11 +36,12 @@ jobs:
           VERSION=$(cat ${CHART_NAME}/Chart.yaml | egrep "^version" | cut -d" " -f2)
           echo "checking if Chart.yaml exists..."
           set +e
-          [ ! -f ${CHART_NAME}/Chart.yaml ] && [ ! -f ${CHART_NAME}/Chart.yml ] && continue
-          echo "checking if version exists..."
-          helm pull oci://${{ env.REGISTRY_URL}}/${{ env.REGISTRY_REPO}}/${CHART_NAME} --version ${VERSION} && exit 1
-          set -e
-          echo "build and push"
-          helm package --version ${VERSION} ${CHART_NAME}
-          helm push ${CHART_NAME}-${VERSION}.tgz oci://${{ env.REGISTRY_URL}}/${{ env.REGISTRY_REPO}}
+          if [[ -f ${CHART_NAME}/Chart.yaml ]] || [[ -f ${CHART_NAME}/Chart.yml ]]; then
+            echo "checking if version exists..."
+            helm pull oci://${{ env.REGISTRY_URL}}/${{ env.REGISTRY_REPO}}/${CHART_NAME} --version ${VERSION} && exit 1
+            set -e
+            echo "build and push"
+            helm package --version ${VERSION} ${CHART_NAME}
+            helm push ${CHART_NAME}-${VERSION}.tgz oci://${{ env.REGISTRY_URL}}/${{ env.REGISTRY_REPO}}
+          fi
         done
