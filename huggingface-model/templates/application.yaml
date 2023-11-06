@@ -50,17 +50,17 @@ spec:
           args:
             - |
               set -x
-              if [ -d "/data/{{ .Values.model.name }}" ]; then echo "Model {{ .Values.model.organization }} is already downloaded. Skipping init..."; exit 0; fi
+              if [ -d "/usr/src/{{ .Values.model.name }}" ]; then echo "Model {{ .Values.model.organization }} is already downloaded. Skipping init..."; exit 0; fi
               {{- if and .Values.init.s3.enabled }}
               apk add --update aws-cli
-              aws s3 cp --recursive {{ .Values.init.s3.bucketURL }} /data/{{ .Values.model.name }}
+              aws s3 cp --recursive {{ .Values.init.s3.bucketURL }} /usr/src/{{ .Values.model.name }}
               {{- else }}
               apk add --update git-lfs
-              git clone --depth=1 https://huggingface.co/{{ .Values.model.organization }}/{{ .Values.model.name }} /data/{{ .Values.model.name }}
+              git clone --depth=1 https://huggingface.co/{{ .Values.model.organization }}/{{ .Values.model.name }} /usr/src/{{ .Values.model.name }}
               {{- end }}
           volumeMounts:
             - name: model-storage
-              mountPath: /data
+              mountPath: "/usr/src/{{ .Values.model.name }}"
           resources:
             requests:
               cpu: "3"
