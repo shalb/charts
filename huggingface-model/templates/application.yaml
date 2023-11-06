@@ -48,15 +48,16 @@ spec:
           imagePullPolicy: "IfNotPresent"
           command: [ "/bin/sh", "-c" ]
           args:
-            - set -x
-            - if [ -d "/data/{{ .Values.model.name }}" ]; then echo "Model {{ .Values.model.id }} is already downloaded. Skipping init..."; exit 0; fi
-            {{- if and .Values.init.s3.enabled }}
-            - apk add --update aws-cli
-            - aws s3 cp --recursive {{ .Values.init.s3.bucketURL }} /data/{{ .Values.model.name }}
-            {{- else }}
-            - apk add --update git-lfs
-            - git clone --depth=1 https://huggingface.co/{{ .Values.model.id }} /data/{{ .Values.model.name }}
-            {{- end }}
+            - |
+              set -x
+              if [ -d "/data/{{ .Values.model.name }}" ]; then echo "Model {{ .Values.model.id }} is already downloaded. Skipping init..."; exit 0; fi
+              {{- if and .Values.init.s3.enabled }}
+              apk add --update aws-cli
+              aws s3 cp --recursive {{ .Values.init.s3.bucketURL }} /data/{{ .Values.model.name }}
+              {{- else }}
+              apk add --update git-lfs
+              git clone --depth=1 https://huggingface.co/{{ .Values.model.id }} /data/{{ .Values.model.name }}
+              {{- end }}
           volumeMounts:
             - name: model-storage
               mountPath: /data
