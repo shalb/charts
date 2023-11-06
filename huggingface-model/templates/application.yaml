@@ -55,7 +55,7 @@ spec:
             - aws s3 cp --recursive {{ .Values.init.s3.bucketURL }} /data/{{ .Values.model.name }}
             {{- else }}
             - apk add --update git-lfs
-            - git clone --depth=1 https://huggingface.co/{{ .Values.model.id }}
+            - git clone --depth=1 https://huggingface.co/{{ .Values.model.id }} /data/{{ .Values.model.name }}
             {{- end }}
           volumeMounts:
             - name: model-storage
