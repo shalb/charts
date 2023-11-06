@@ -23,7 +23,7 @@ Generate internal container port.
 Expand the name of the chart.
 */}}
 {{- define "huggingface-model.name" -}}
-{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" }}
+{{- default .Values.model.name (default .Chart.name .Values.nameOverride) | trunc 63 | trimSuffix "-" }}
 {{- end }}
 
 {{/*
