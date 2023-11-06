@@ -100,7 +100,7 @@ spec:
           {{- end }}
           volumeMounts:
             - name: model-storage
-              mountPath: /data
+              mountPath: "/usr/src/{{ .Values.model.name }}"
           {{- with .Values.extraVolumeMounts}}
             {{- toYaml . | nindent 12 }}
           {{- end }}
