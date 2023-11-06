@@ -8,8 +8,8 @@
 ## name: SSD-1B
 ##
 model:
-  organization: "ss"
-  name: "ss"
+  organization: ""
+  name: ""
 
 ## Init configuration. By default, init clone model from huggingface git.
 ## The another way is to upload model to s3 bucket to reduce init delay and external traffic.
