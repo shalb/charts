@@ -51,6 +51,7 @@ spec:
             - |
               set -x
               if [ -f "/usr/src/{{ .Values.model.name }}/config.json" ]; then echo "Model {{ .Values.model.organization }} is already downloaded. Skipping init..."; exit 0; fi
+              rm -rf /usr/src/{{ .Values.model.name }}/*
               {{- if and .Values.init.s3.enabled }}
               apk add --update aws-cli
               aws s3 cp --recursive {{ .Values.init.s3.bucketURL }} /usr/src/{{ .Values.model.name }}
