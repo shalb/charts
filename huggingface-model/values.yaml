@@ -114,6 +114,15 @@ serviceAccount:
 ##
 podAnnotations: {}
 
+## @param updateStrategy Redis&reg; deployment/statefulset strategy/updateStrategy Can be set to `RollingUpdate`, `OnDelete` (StatefulSet), `Recreate` (Deployment)
+## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
+## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
+updateStrategy: {}
+## e.g. (rollingUpdate option available Only for Deployment)
+#   type: RollingUpdate
+#   rollingUpdate:
+#     maxUnavailable: 1
+
 ## Configure Pods Security Context
 ## ref: https://kubernetes.io/docs/tasks/configure-pod-container/security-context/#set-the-security-context-for-a-pod
 ## @param securityContext Set pod's Security Context fsGroup

@@ -12,6 +12,15 @@ metadata:
   labels:
     {{- include "huggingface-model.labels" . | nindent 4 }}
 spec:
+  {{- with .Values.updateStrategy }}
+  {{- if (eq $kind "Deployment") }}
+  strategy:
+    {{- toYaml . | nindent 4 }}
+  {{- else }}
+  updateStrategy:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+  {{- end}}
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
