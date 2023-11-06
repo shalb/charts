@@ -109,12 +109,12 @@ serviceAccount:
 #         - get
 #         - list
 
-## @param podAnnotations Annotations for Redis&reg; replicas pods
+## @param podAnnotations Annotations for replicas pods
 ## ref: https://kubernetes.io/docs/concepts/overview/working-with-objects/annotations/
 ##
 podAnnotations: {}
 
-## @param updateStrategy Redis&reg; deployment/statefulset strategy/updateStrategy Can be set to `RollingUpdate`, `OnDelete` (StatefulSet), `Recreate` (Deployment)
+## @param updateStrategy specifies the strategy used to replace old Pods by new ones. Can be set to `RollingUpdate`, `OnDelete` (StatefulSet), `Recreate` (Deployment)
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/statefulset/#update-strategies
 ## ref: https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy
 updateStrategy: {}
