@@ -68,6 +68,19 @@ nameOverride: ""
 ##
 fullnameOverride: ""
 
+## Start model pod(s) without limitations on shm memory.
+## By default docker and containerd (and possibly other container runtimes) limit `/dev/shm` to `64M`
+## ref: https://github.com/containerd/containerd/issues/3654
+##
+shmVolume:
+  ## @param shmVolume.enabled Enable emptyDir volume for /dev/shm for model pod(s)
+  ##
+  enabled: true
+  ## @param shmVolume.sizeLimit Set this to enable a size limit on the shm tmpfs
+  ## Note: the size of the tmpfs counts against container's memory limit
+  ##
+  sizeLimit: "1Gi"
+
 ## Persistence parameters
 ## ref: https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 ## @param persistence.accessModes PVC accessModes

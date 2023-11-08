@@ -111,9 +111,13 @@ spec:
           volumeMounts:
             - name: model-storage
               mountPath: "/usr/src/{{ .Values.model.name }}"
-          {{- with .Values.extraVolumeMounts}}
+            {{- if .Values.shmVolume.enabled }}
+            - name: shm
+              mountPath: /dev/shm
+            {{- end }}
+            {{- with .Values.extraVolumeMounts}}
             {{- toYaml . | nindent 12 }}
-          {{- end }}
+            {{- end }}
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}
@@ -132,6 +136,12 @@ spec:
         - name: model-storage
           persistentVolumeClaim:
             claimName: {{ include "huggingface-model.fullname" . }}
+        {{- if .Values.shmVolume.enabled }}
+        - name: shm
+          emptyDir:
+            medium: Memory
+            sizeLimit: {{ default "1Gi" .Values.shmVolume.sizeLimit }}
+        {{- end }}
       {{- with .Values.extraVolumes }}
         {{- toYaml . | nindent 8 }}
       {{- end }}
