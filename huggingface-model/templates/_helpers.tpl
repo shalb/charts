@@ -23,7 +23,7 @@ Generate internal container port.
 Expand the name of the chart.
 */}}
 {{- define "huggingface-model.name" -}}
-{{- default (default .Chart.Name .Values.nameOverride) .Values.model.name | trunc 63 | trimSuffix "-" | regexReplaceAll "\\W+" "-" }}
+{{- default (default .Chart.Name .Values.nameOverride) .Values.model.name | trunc 63 | trimSuffix "-" | lower | regexReplaceAll "\\W+" "-" }}
 {{- end }}
 
 {{/*
@@ -35,7 +35,7 @@ If release name contains chart name it will be used as a full name.
 {{- if .Values.fullnameOverride }}
 {{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" }}
 {{- else }}
-{{- $name := (regexReplaceAll "\\W+" (default (default .Chart.Name .Values.nameOverride) .Values.model.name) "-") | trunc 63 | trimSuffix "-" }}
+{{- $name := (regexReplaceAll "\\W+" (default (default .Chart.Name .Values.nameOverride) .Values.model.name) "-") | trunc 63 | trimSuffix "-" | lower }}
 {{- if contains $name .Release.Name }}
 {{- .Release.Name | trunc 63 | trimSuffix "-" }}
 {{- else }}

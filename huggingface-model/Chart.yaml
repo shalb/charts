@@ -4,5 +4,5 @@ description: Helm chart for deploy Hugging Face to kubernetes cluster. See [Hugg
 
 type: application
 
-version: 0.0.21
+version: 0.0.22
 
