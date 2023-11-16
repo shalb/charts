@@ -4,5 +4,5 @@ description: Helm chart for deploy Hugging Face models and chat-ui to Kubernetes
 
 type: application
 
-version: 0.0.22
+version: 0.0.23
 
