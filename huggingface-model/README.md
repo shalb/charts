@@ -11,14 +11,14 @@ Also it would deploy [HuggingFace chat-ui](https://github.com/huggingface/chat-u
 
 ### Model
 
-| Name                        | Description                                          | Value                                                 |
-| --------------------------- | ---------------------------------------------------- | ----------------------------------------------------- |
-| `model.organization`        | Models' company name on huggingface, required!       | `""`                                                  |
-| `model.name`                | Models' name on huggingface, required!               | `""`                                                  |
-| `init.s3.enabled`           | Turn on/off s3 data source Default: disabled         | `false`                                               |
-| `init.s3.bucketURL`         | Full s3 URL included path to model's folder          | `s3://k8s-model-zephyr/llm/deployment/segmind/SSD-1B` |
-| `huggingface.containerPort` | Deployment/StatefulSet ContainerPort, optional       | `8080`                                                |
-| `huggingface.args`          | Additional arg for text-generation-launcher optional | `[]`                                                  |
+| Name                        | Description                                          | Value                                                               |
+| --------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------- |
+| `model.organization`        | Models' company name on huggingface, required!       | `""`                                                                |
+| `model.name`                | Models' name on huggingface, required!               | `""`                                                                |
+| `init.s3.enabled`           | Turn on/off s3 data source Default: disabled         | `false`                                                             |
+| `init.s3.bucketURL`         | Full s3 URL included path to model's folder          | `s3://k8s-model-zephyr/llm/deployment/HuggingFaceH4/zephyr-7b-beta` |
+| `huggingface.containerPort` | Deployment/StatefulSet ContainerPort, optional       | `8080`                                                              |
+| `huggingface.args`          | Additional arg for text-generation-launcher optional | `[]`                                                                |
 
 ### Global
 
