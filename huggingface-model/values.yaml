@@ -3,15 +3,15 @@
 ## ref: https://huggingface.co/models
 ## @param model.organization Models' company name on huggingface, required!
 ## @param model.name Models' name on huggingface, required!
-## e.g. to deploy model https://huggingface.co/segmind/SSD-1B use configuration below:
-## organization: segmind
-## name: SSD-1B
+## e.g. to deploy model https://huggingface.co/HuggingFaceH4/zephyr-7b-beta use configuration below:
+## organization: HuggingFaceH4
+## name: zephyr-7b-beta
 ##
 model:
   organization: ""
   name: ""
 
-## Init configuration. By default, init clone model from huggingface git.
+## Init configuration. By default, init clone model from Huggingface git using git-lfs.
 ## The another way is to upload model to s3 bucket to reduce init delay and external traffic.
 ## @param init.s3.enabled Turn on/off s3 data source Default: disabled
 ## @param init.s3.bucketURL Full s3 URL included path to model's folder
@@ -19,9 +19,9 @@ model:
 init:
   s3:
     enabled: false
-    bucketURL: s3://k8s-model-zephyr/llm/deployment/segmind/SSD-1B
+    bucketURL: s3://k8s-model-zephyr/llm/deployment/HuggingFaceH4/zephyr-7b-beta
 
-## huggingface block configure running text-generation-launcher internal port and additional arguments
+## Huggingface block configure running text-generation-launcher internal port and additional arguments
 ## @param huggingface.containerPort Deployment/StatefulSet ContainerPort, optional
 ##
 huggingface:

@@ -1,6 +1,11 @@
-# Helm chart for deploy Hugging Face to kubernetes cluster
+# Helm chart for deploy HuggingFace models to Kubernetes cluster
 
-See [Hugging Face models](https://huggingface.co/models)
+Charts install [Text Generation Inference](https://github.com/huggingface/text-generation-inference) container and serves [Text Generation LLM models](https://huggingface.co/models?pipeline_tag=text-generation).
+It is possible to inject another image to serve inference with different approach.
+
+init-container is used to download model to PVC storage from HuggingFace directly or from s3-compatible(and from other storage).
+
+Also it would deploy [HuggingFace chat-ui](https://github.com/huggingface/chat-ui) image and configure it to use with deployed model to be able to chat with it in browser.
 
 ## Parameters
 

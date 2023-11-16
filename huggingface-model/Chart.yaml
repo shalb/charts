@@ -1,6 +1,6 @@
 apiVersion: v2
 name: huggingface-model
-description: Helm chart for deploy Hugging Face to kubernetes cluster. See [Hugging Face models](https://huggingface.co/models)
+description: Helm chart for deploy Hugging Face models and chat-ui to Kubernetes cluster. See [Hugging Face models](https://huggingface.co/models)
 
 type: application
 
