@@ -8,8 +8,8 @@
 ## name: zephyr-7b-beta
 ##
 model:
-  organization: "meta-llama"
-  name: "Llama-2-70b-chat-hf"
+  organization: ""
+  name: ""
 
 chat:
   enabled: false
