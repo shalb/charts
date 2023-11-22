@@ -56,6 +56,9 @@ spec:
               value: {{ .Values.chat.mongodb.urlParams }}
             {{- end }}
             {{- end }}
+            {{- with .Values.chat.extraEnvVars }}
+            {{ toYaml . | nindent 12 }}
+            {{- end}}
           resources:
             {{- toYaml .Values.chat.resources | nindent 12 }}
       {{- with .Values.chat.nodeSelector }}
