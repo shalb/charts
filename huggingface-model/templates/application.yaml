@@ -71,7 +71,7 @@ spec:
               mountPath: "/usr/src/{{ .Values.model.name }}"
           resources:
             requests:
-              cpu: "3"
+              cpu: "0.5"
       containers:
         - name: model
           image: {{ .Values.image.repo }}:{{ .Values.image.tag }}
