@@ -14,9 +14,9 @@ model:
 chat:
   enabled: false
   replicaCount: 1
-  extraEnvVars:
-  - name: PUBLIC_ORIGIN
-    value: "http://localhost:8080"
+  extraEnvVars: []
+  # - name: PUBLIC_ORIGIN
+  #   value: "http://localhost:8080"
   podAnnotations: {}
   imagePullSecrets: []
   ## @param chat.affinity Affinity for pod assignment
