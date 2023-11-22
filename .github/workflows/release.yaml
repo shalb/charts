@@ -41,6 +41,7 @@ jobs:
             helm pull oci://${{ env.REGISTRY_URL}}/${{ env.REGISTRY_REPO}}/${CHART_NAME} --version ${VERSION} && exit 1
             set -e
             echo "build and push"
+            helm dep update ${CHART_NAME}
             helm package --version ${VERSION} ${CHART_NAME}
             helm push ${CHART_NAME}-${VERSION}.tgz oci://${{ env.REGISTRY_URL}}/${{ env.REGISTRY_REPO}}
           fi
