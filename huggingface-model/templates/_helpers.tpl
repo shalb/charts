@@ -1,6 +1,14 @@
 {{/*
 Generate internal container port.
 */}}
+{{- define "huggingface-model.chat.base-config" -}}
+- name: {{ .Values.model.organization }}/{{ .Values.model.name }}
+  endpoints:
+   - url: http://{{ include "huggingface-model.fullname" . }}:{{ .Values.service.port | default 8080 }}
+     type: "tgi"
+{{- if .Values.chat.modelConfig }}{{- .Values.chat.modelConfig | toYaml | nindent 2 }}{{ end }}
+{{- if .Values.chat.additionalModels }}{{ .Values.chat.additionalModels | toYaml | nindent 0 }}{{ end }}
+{{- end}}
 {{- define "huggingface-model.containerPort" -}}
 {{- if .Values.huggingface }}
 {{- default 8080 .Values.huggingface.containerPort  }}
@@ -70,7 +78,10 @@ Selector labels
 app.kubernetes.io/name: {{ include "huggingface-model.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end }}
-
+{{- define "huggingface-chat.selectorLabels" -}}
+app.kubernetes.io/name: {{ include "huggingface-model.name" . }}-chat-ui
+app.kubernetes.io/instance: {{ .Release.Name }}-chat
+{{- end }}
 {{/*
 Create the name of the service account to use
 */}}

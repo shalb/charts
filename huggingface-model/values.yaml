@@ -8,8 +8,99 @@
 ## name: zephyr-7b-beta
 ##
 model:
-  organization: ""
-  name: ""
+  organization: "meta-llama"
+  name: "Llama-2-70b-chat-hf"
+
+chat:
+  enabled: false
+  replicaCount: 1
+  podAnnotations: {}
+  imagePullSecrets: []
+  ## @param chat.affinity Affinity for pod assignment
+  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set
+  ##
+  affinity: {}
+  ## @param chat.nodeSelector Node labels for pod assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  ##
+  nodeSelector: {}
+  ## @param chat.tolerations Tolerations for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  ##
+  tolerations: []
+  modelConfig: {}
+    ## e.g
+    # parameters:
+    #   temperature: 0.1
+    #   top_p: 0.95
+    #   repetition_penalty: 1.2
+    #   top_k: 50
+    #   truncate: 1000
+    #   max_new_tokens: 1024
+    # datasetName: OpenAssistant/oasst1
+    # description: A good alternative to ChatGPT
+    # websiteUrl: https://open-assistant.io
+    # userMessageToken: "<|prompter|>"
+    # assistantMessageToken: "<|assistant|>"
+    # messageEndToken: "</s>"
+    # preprompt: |
+    #   Below are a series of dialogues between various people and an AI assistant. The AI tries to be helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable. The assistant is happy to help with almost anything, and will do its best to understand exactly what is needed. It also tries to avoid giving false or misleading information, and it caveats when it isn't entirely sure about the right answer. That said, the assistant is practical and really does its best, and doesn't let caution get too much in the way of being useful.
+    #   -----
+    # promptExamples:
+    # - title: Write an email from bullet list
+    #   prompt: "As a restaurant owner, write a professional email to the supplier to
+    #     get these products every week: \n\n- Wine (x10)\n- Eggs (x24)\n- Bread (x12)"
+    # - title: Code a snake game
+    #   prompt: Code a basic snake game in python, give explanations for each step.
+    # - title: Assist in a task
+    #   prompt: How do I make a delicious lemon cheesecake?
+    # parameters:
+    #   temperature: 0.9
+    #   top_p: 0.95
+    #   repetition_penalty: 1.2
+    #   top_k: 50
+
+  additionalModels: []
+    # - name: "Llama-2-70b-chat-hf
+    #   endpoints:
+    #     - url: "http://exampl.com:8080/model/api"
+    #       type: "tgi"
+    #   parameters:
+    #     temperature: 0.1
+    #     top_p: 0.95
+    #     repetition_penalty: 1.2
+    #     top_k: 50
+    #     truncate: 1000
+    #     max_new_tokens: 1024
+    #   datasetName: OpenAssistant/oasst1
+  resources:
+    requests:
+      cpu: "0.5"
+      memory: "512M"
+  image:
+    repo: "shalb/hf-chat-ui"
+    tag: "v0.8"
+    pullPolicy: IfNotPresent
+  mongodb:
+    host: ""
+    user: "root"
+    password: ""
+    port: "27017"
+    urlParams: "admin?directConnection=true&authSource=admin"
+  ingress:
+    enabled: false
+    annotations:
+      cert-manager.io/cluster-issuer: "letsencrypt-http"
+    hosts:
+      - host: api.model.example.com
+        paths:
+          - path: /
+            pathType: Prefix
+    tls:
+      - hosts:
+          - api.model.example.com
+        secretName: huggingface-model
 
 ## Init configuration. By default, init clone model from Huggingface git using git-lfs.
 ## The another way is to upload model to s3 bucket to reduce init delay and external traffic.
@@ -159,26 +250,23 @@ extraEnvVars: []
 ## Configure the ingresses resources list that allows you to access the model API
 ## @param ingresses.enabled Enable/disable ingress(es) for model API, default disabled
 ##
-ingresses:
-  enabled: false
+ingress:
+  enabled: true
   ## ingresses list
   ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
   ## @param ingresses.configs List of ingresses configs
   ## e.g.
-  ## configs:
-  ## - annotations:
-  ##     cert-manager.io/cluster-issuer: "letsencrypt-http"
-  ##   hosts:
-  ##     - host: api.model.example.com
-  ##       paths:
-  ##         - path: /
-  ##           pathType: Prefix
-  ##   tls:
-  ##     - hosts:
-  ##         - api.model.example.com
-  ##       secretName: huggingface-model
-  ##
-  configs: []
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-http"
+  hosts:
+    - host: api.model.example.com
+      paths:
+        - path: /
+          pathType: Prefix
+  tls:
+    - hosts:
+        - api.model.example.com
+      secretName: huggingface-model
 
 
 ## @param livenessProbe Configure extra options for model liveness probe
@@ -287,3 +375,7 @@ nodeSelector: {}
 ##
 tolerations: []
 
+mongodb:
+  install: true
+  auth:
+    rootPassword: ""

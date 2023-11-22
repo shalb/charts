@@ -1,0 +1,73 @@
+{{- if .Values.chat.enabled }}
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "huggingface-model.fullname" . }}-chat
+  labels:
+    {{- include "huggingface-model.labels" . | nindent 4 }}
+spec:
+  replicas: {{ .Values.chat.replicaCount }}
+  selector:
+    matchLabels:
+      {{- include "huggingface-chat.selectorLabels" . | nindent 6 }}
+  template:
+    metadata:
+    {{- with .Values.chat.podAnnotations }}
+      annotations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+      labels:
+        {{- include "huggingface-chat.selectorLabels" . | nindent 8 }}
+    spec:
+      {{- with .Values.chat.imagePullSecrets }}
+      imagePullSecrets:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: model
+          image: {{ .Values.chat.image.repo }}:{{ .Values.chat.image.tag }}
+          imagePullPolicy: {{ .Values.chat.image.pullPolicy }}
+          ports:
+            - containerPort: 3000
+          env:
+            - name: MODELS
+              value: '{{ toRawJson (fromYamlArray (include  "huggingface-model.chat.base-config" .)) }}'
+            - name: MONGODB_HOST
+              value: {{ if .Values.mongodb.install }}{{ include "mongodb.service.nameOverride" .Subcharts.mongodb }}{{ else }}{{ .Values.chat.mongodb.host }}{{ end }}
+            {{- if .Values.mongodb.port }}
+            - name: MONGODB_PORT
+              value: {{ .Values.chat.mongodb.port | quote }}
+            {{- end }}
+            - name: MONGODB_USER
+              value: {{ .Values.chat.mongodb.user | default "root" }}
+            {{- if .Values.mongodb.install }}
+            - name: MONGODB_URL_PARAMS
+              value: "admin?directConnection=true&authSource=admin"
+            - name: MONGODB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ include "mongodb.service.nameOverride" .Subcharts.mongodb }}
+                  key: mongodb-root-password
+            {{- else }}
+            {{- if .Values.mongodb.password }}
+            - name: MONGODB_PASSWORD
+              value: {{ .Values.chat.mongodb.password | quote }}
+            - name: MONGODB_URL_PARAMS
+              value: {{ .Values.chat.mongodb.urlParams }}
+            {{- end }}
+            {{- end }}
+          resources:
+            {{- toYaml .Values.chat.resources | nindent 12 }}
+      {{- with .Values.chat.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.chat.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      {{- with .Values.chat.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+{{- end }}

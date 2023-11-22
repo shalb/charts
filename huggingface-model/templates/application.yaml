@@ -6,8 +6,6 @@
 apiVersion: apps/v1
 kind: {{ $kind }}
 metadata:
-  annotations:
-    reloader.stakater.com/auto: "true"
   name: {{ include "huggingface-model.fullname" . }}
   labels:
     {{- include "huggingface-model.labels" . | nindent 4 }}
@@ -59,7 +57,7 @@ spec:
           args:
             - |
               set -x
-              if [ -f "/usr/src/{{ .Values.model.name }}/config.json" ]; then echo "Model {{ .Values.model.organization }} is already downloaded. Skipping init..."; exit 0; fi
+              if [ -f "/usr/src/{{ .Values.model.name }}/config.json" ]; then echo "Model {{ .Values.model.name }} is already downloaded. Skipping init..."; exit 0; fi
               rm -rf /usr/src/{{ .Values.model.name }}/*
               {{- if and .Values.init.s3.enabled }}
               apk add --update aws-cli

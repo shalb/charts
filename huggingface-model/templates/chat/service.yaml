@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "huggingface-model.fullname" . }}-chat
+  labels:
+    {{- include "huggingface-model.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type | default "ClusterIP" }}
+  ports:
+    - name: http
+      port: {{ .Values.service.port | default 8080 }}
+      targetPort: 3000
+  selector:
+    {{- include "huggingface-chat.selectorLabels" . | nindent 4 }}
