@@ -1,11 +1,24 @@
-# Helm chart for deploy HuggingFace models to Kubernetes cluster
+# Helm Chart for Deploying HuggingFace Models to a Kubernetes Cluster
 
-Charts install [Text Generation Inference](https://github.com/huggingface/text-generation-inference) container and serves [Text Generation LLM models](https://huggingface.co/models?pipeline_tag=text-generation).
+Charts installs the [Text Generation Inference](https://github.com/huggingface/text-generation-inference) container to serve [Text Generation LLM models](https://huggingface.co/models?pipeline_tag=text-generation).
 It is possible to inject another image to serve inference with different approach.
 
 init-container is used to download model to PVC storage from HuggingFace directly or from s3-compatible(and from other storage).
 
-Also it would deploy [HuggingFace chat-ui](https://github.com/huggingface/chat-ui) image and configure it to use with deployed model to be able to chat with it in browser.
+Also it would deploy [HuggingFace chat-ui](https://github.com/huggingface/chat-ui) image and configure it to use with deployed model to be able to chat with model in browser.
+
+## Quickstart
+
+Make sure you have:
+
+- Kubernetes cluster and kubeconfig. Check options for quick Kubernetes provision in [README.md](../README.md).
+- Prepared `values.yaml` with your custom settings.
+
+Then, just install it:
+
+```yaml
+helm install oci://registry-1.docker.io/shalb/huggingface-model -f ../values.yaml
+```
 
 ## Parameters
 
