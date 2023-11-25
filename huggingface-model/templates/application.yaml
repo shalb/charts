@@ -79,7 +79,7 @@ spec:
           command: [ "text-generation-launcher" ]
           args:
             - "--model-id"
-            - "{{ .Values.model.organization }}/{{ .Values.model.name }}"
+            - "/usr/src/{{ .Values.model.name }}"
             - "--huggingface-hub-cache"
             - "/usr/src/{{ .Values.model.name }}"
             - "--weights-cache-override"
