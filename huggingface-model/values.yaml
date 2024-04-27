@@ -15,100 +15,6 @@ model:
   hf_user: ""
   hf_token: ""
 
-chat:
-  enabled: false
-  replicaCount: 1
-  extraEnvVars: []
-  # - name: PUBLIC_ORIGIN
-  #   value: "http://localhost:8080"
-  podAnnotations: {}
-  imagePullSecrets: []
-  ## @param chat.affinity Affinity for pod assignment
-  ## Ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
-  ## NOTE: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set
-  ##
-  affinity: {}
-  ## @param chat.nodeSelector Node labels for pod assignment
-  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
-  ##
-  nodeSelector: {}
-  ## @param chat.tolerations Tolerations for pod assignment
-  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
-  ##
-  tolerations: []
-  modelConfig: {}
-    ## e.g
-    # parameters:
-    #   temperature: 0.1
-    #   top_p: 0.95
-    #   repetition_penalty: 1.2
-    #   top_k: 50
-    #   truncate: 1000
-    #   max_new_tokens: 1024
-    # datasetName: OpenAssistant/oasst1
-    # description: A good alternative to ChatGPT
-    # websiteUrl: https://open-assistant.io
-    # userMessageToken: "<|prompter|>"
-    # assistantMessageToken: "<|assistant|>"
-    # messageEndToken: "</s>"
-    # preprompt: |
-    #   Below are a series of dialogues between various people and an AI assistant. The AI tries to be helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable. The assistant is happy to help with almost anything, and will do its best to understand exactly what is needed. It also tries to avoid giving false or misleading information, and it caveats when it isn't entirely sure about the right answer. That said, the assistant is practical and really does its best, and doesn't let caution get too much in the way of being useful.
-    #   -----
-    # promptExamples:
-    # - title: Write an email from bullet list
-    #   prompt: "As a restaurant owner, write a professional email to the supplier to
-    #     get these products every week: \n\n- Wine (x10)\n- Eggs (x24)\n- Bread (x12)"
-    # - title: Code a snake game
-    #   prompt: Code a basic snake game in python, give explanations for each step.
-    # - title: Assist in a task
-    #   prompt: How do I make a delicious lemon cheesecake?
-    # parameters:
-    #   temperature: 0.9
-    #   top_p: 0.95
-    #   repetition_penalty: 1.2
-    #   top_k: 50
-
-  additionalModels: []
-    # - name: "Llama-2-70b-chat-hf
-    #   endpoints:
-    #     - url: "http://exampl.com:8080/model/api"
-    #       type: "tgi"
-    #   parameters:
-    #     temperature: 0.1
-    #     top_p: 0.95
-    #     repetition_penalty: 1.2
-    #     top_k: 50
-    #     truncate: 1000
-    #     max_new_tokens: 1024
-    #   datasetName: OpenAssistant/oasst1
-  resources:
-    requests:
-      cpu: "0.5"
-      memory: "512M"
-  image:
-    repo: "shalb/hf-chat-ui"
-    tag: "v0.8"
-    pullPolicy: IfNotPresent
-  mongodb:
-    host: ""
-    user: "root"
-    password: ""
-    port: "27017"
-    urlParams: "admin?directConnection=true&authSource=admin"
-  ingress:
-    enabled: false
-    annotations:
-      cert-manager.io/cluster-issuer: "letsencrypt-http"
-    hosts:
-      - host: api.model.example.com
-        paths:
-          - path: /
-            pathType: Prefix
-    tls:
-      - hosts:
-          - api.model.example.com
-        secretName: huggingface-model
-
 ## Init configuration. By default, init clone model from Huggingface git using git-lfs.
 ## The another way is to upload model to s3 bucket to reduce init delay and external traffic.
 ## @param init.s3.enabled Turn on/off s3 data source Default: disabled
@@ -155,7 +61,7 @@ image:
   pullPolicy: IfNotPresent
 
 ## @param imagePullSecrets May need if used private repo as a cache for image ghcr.io/huggingface/text-generation-inference
-#
+##
 imagePullSecrets: []
 
 ## @param nameOverride String to partially override common.names.name
@@ -191,7 +97,7 @@ persistence:
   storageClassName: gp2
   storage: 100Gi
 
-## Persistence parameters
+## Service parameters
 ## ref: https://kubernetes.io/docs/concepts/services-networking/
 ## @param service.port Service port, default 8080
 ## @param service.type Service type, default ClusterIP
@@ -254,26 +160,25 @@ securityContext: {}
 ##
 extraEnvVars: []
 
-## Configure the ingresses resources list that allows you to access the model API
-## @param ingresses.enabled Enable/disable ingress(es) for model API, default disabled
+## Configure the ingress resource that allows you to access the model API
+## @param ingress.enabled Enable/disable ingress(es) for model API, default disabled
 ##
 ingress:
-  enabled: true
-  ## ingresses list
+  enabled: false
+  ## ingress configuration
   ## ref: https://kubernetes.io/docs/concepts/services-networking/ingress/
-  ## @param ingresses.configs List of ingresses configs
   ## e.g.
-  annotations:
-    cert-manager.io/cluster-issuer: "letsencrypt-http"
-  hosts:
-    - host: api.model.example.com
-      paths:
-        - path: /
-          pathType: Prefix
-  tls:
-    - hosts:
-        - api.model.example.com
-      secretName: huggingface-model
+  #annotations:
+  #  cert-manager.io/cluster-issuer: "letsencrypt-http"
+  #hosts:
+  #  - host: api.model.example.com
+  #    paths:
+  #      - path: /
+  #        pathType: Prefix
+  #tls:
+  #  - hosts:
+  #      - api.model.example.com
+  #    secretName: huggingface-model
 
 
 ## @param livenessProbe Configure extra options for model liveness probe
@@ -324,7 +229,7 @@ pdb:
   ##
   maxUnavailable: ""
 
-## Init container's resource requests and limits
+## Model container's resource requests and limits
 ## ref: https://kubernetes.io/docs/user-guide/compute-resources/
 ## @param resources.limits.nvidia.com/gpu The required option by text-generation-launcher
 ## @param resources.requests.cpu The requested CPU minimal recommended value
@@ -362,7 +267,7 @@ extraVolumeMounts: []
 ## @param autoscaling.targetMemory Target Memory utilization percentage
 ##
 autoscaling:
-  enabled: true
+  enabled: false
   minReplicas: 1
   maxReplicas: 5
   targetCPU: 50
@@ -382,6 +287,144 @@ nodeSelector: {}
 ##
 tolerations: []
 
+## @section Chat
+## Chat-UI used to access the model in ChatGPT style
+## ref: https://github.com/huggingface/chat-ui
+chat:
+  ## @param chat.enabled Enables chat-ui for the model installed with the chart.
+  enabled: false
+
+  ## @param chat.replicaCount Number of chat replicas
+  replicaCount: 1
+
+  ## @param chat.extraEnvVars Extra environment variables
+  ## ref: https://github.com/huggingface/chat-ui#extra-parameters
+  extraEnvVars: []
+  ## e.g.
+  # - name: PUBLIC_ORIGIN
+  #   value: "http://localhost:8080"
+
+  ## @param chat.modelConfig Configuration for the chat model
+  ## ref: https://github.com/huggingface/chat-ui#custom-models
+  modelConfig: {}
+    ## e.g.
+    # parameters:
+    #   temperature: 0.1
+    #   top_p: 0.95
+    #   repetition_penalty: 1.2
+    #   top_k: 50
+    #   truncate: 1000
+    #   max_new_tokens: 1024
+    # datasetName: OpenAssistant/oasst1
+    # description: A good alternative to ChatGPT
+    # websiteUrl: https://open-assistant.io
+    # userMessageToken: ""
+    # assistantMessageToken: ""
+    # messageEndToken: "</s>"
+    # preprompt: |
+    #   Below are a series of dialogues between various people and an AI assistant. The AI tries to be helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable. The assistant is happy to help with almost anything, and will do its best to understand exactly what is needed. It also tries to avoid giving false or misleading information, and it caveats when it isn't entirely sure about the right answer. That said, the assistant is practical and really does its best, and doesn't let caution get too much in the way of being useful.
+    #   -----
+    # promptExamples:
+    # - title: Write an email from bullet list
+    #   prompt: "As a restaurant owner, write a professional email to the supplier to
+    #     get these products every week: \n\n- Wine (x10)\n- Eggs (x24)\n- Bread (x12)"
+    # - title: Code a snake game
+    #   prompt: Code a basic snake game in python, give explanations for each step.
+    # - title: Assist in a task
+    #   prompt: How do I make a delicious lemon cheesecake?
+    # parameters:
+    #   temperature: 0.9
+    #   top_p: 0.95
+    #   repetition_penalty: 1.2
+    #   top_k: 50
+
+  ## @param chat.additionalModels Additional models for the chat
+  additionalModels: []
+    ## e.g.
+    # - name: "Llama-2-70b-chat-hf
+    #   endpoints:
+    #     - url: "http://exampl.com:8080/model/api"
+    #       type: "tgi"
+    #   parameters:
+    #     temperature: 0.1
+    #     top_p: 0.95
+    #     repetition_penalty: 1.2
+    #     top_k: 50
+    #     truncate: 1000
+    #     max_new_tokens: 1024
+    #   datasetName: OpenAssistant/oasst1
+
+  ## @param chat.podAnnotations Annotations for chat pods
+  podAnnotations: {}
+
+  ## @param chat.imagePullSecrets Secrets for image pulling
+  imagePullSecrets: []
+
+  ## @param chat.affinity Affinity for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/assign-pod-node/#affinity-and-anti-affinity
+  ## NOTE: podAffinityPreset, podAntiAffinityPreset, and nodeAffinityPreset will be ignored when it's set
+  affinity: {}
+
+  ## @param chat.nodeSelector Node labels for pod assignment
+  ## ref: https://kubernetes.io/docs/user-guide/node-selection/
+  nodeSelector: {}
+
+  ## @param chat.tolerations Tolerations for pod assignment
+  ## ref: https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
+  tolerations: []
+
+  ## @param chat.resources.requests.cpu The requested CPU minimal recommended value
+  ## @param chat.resources.requests.memory The requested memory minimal recommended size
+  ##
+  resources:
+    requests:
+      cpu: "0.5"
+      memory: "512M"
+
+  ## Chat-UI Image configuration
+  ## @param chat.image.repo chat-ui image repo(we have modified Dockerfile to accept env variables)
+  ## ref: https://github.com/voatsap/chat-ui/blob/main/Dockerfile
+  ## @param chat.image.tag Huggingface image version
+  ## @param chat.image.pullPolicy Huggingface image pull policy
+  ## ref: https://kubernetes.io/docs/concepts/containers/images/#image-pull-policy
+  ##
+  image:
+    repo: "shalb/hf-chat-ui"
+    tag: "v0.8"
+    pullPolicy: IfNotPresent
+
+  ## @param chat.mongodb MongoDB configuration for the chat, if mongodb.install is set to true,
+  ## it would be auto configured for the mongodb installed with the chart
+  mongodb: {}
+    ## e.g.
+    #host: ""
+    #user: "root"
+    #password: ""
+    #port: "27017"
+    #urlParams: "admin?directConnection=true&authSource=admin"
+
+  ## @param chat.ingress.enabled Ingress configuration for the chat service
+  ingress:
+    enabled: false
+    ## e.g.
+    ## Ingress annotations
+    #annotations:
+    #  cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    ## Hosts and paths for Ingress
+    #hosts:
+    #  - host: api.model.example.com
+    #    paths:
+    #      - path: /
+    #        pathType: Prefix
+    ## TLS configuration for Ingress
+    #tls:
+    #  - hosts:
+    #      - api.model.example.com
+    #    secretName: huggingface-model
+
+## @section MongoDB
+## @param mongodb.install Install MongoDB
+## @param mongodb.auth.rootPassword Root password for MongoDB
 mongodb:
   install: true
   auth:
