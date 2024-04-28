@@ -3,13 +3,17 @@
 ## ref: https://huggingface.co/models
 ## @param model.organization Models' company name on huggingface, required!
 ## @param model.name Models' name on huggingface, required!
+## @param model.hf_user Huggingface git user, optional
+## @param model.hf_token Huggingface git token, optional
 ## e.g. to deploy model https://huggingface.co/HuggingFaceH4/zephyr-7b-beta use configuration below:
 ## organization: HuggingFaceH4
 ## name: zephyr-7b-beta
 ##
 model:
-  organization: ""
-  name: ""
+  organization: "mycompany"
+  name: "demo"
+  hf_user: ""
+  hf_token: ""
 
 ## Init configuration. By default, init clone model from Huggingface git using git-lfs.
 ## The another way is to upload model to s3 bucket to reduce init delay and external traffic.
