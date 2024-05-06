@@ -4,7 +4,7 @@ description: Helm chart for deploy Hugging Face models to Kubernetes cluster. Se
 
 type: application
 
-version: 0.2.0
+version: 0.2.1
 
 dependencies:
 - condition: mongodb.enabled
