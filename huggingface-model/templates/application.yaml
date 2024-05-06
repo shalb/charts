@@ -58,13 +58,19 @@ spec:
             - |
               set -x
               if [ -f "/usr/src/{{ .Values.model.name }}/config.json" ]; then echo "Model {{ .Values.model.name }} is already downloaded. Skipping init..."; exit 0; fi
+              echo "Files present before init:"
+              ls -al /usr/src/{{ .Values.model.name }}  # Add this line to check directory contents
               rm -rf /usr/src/{{ .Values.model.name }}/*
+              rm -rf /usr/src/{{ .Values.model.name }}/.*
+              echo "Files present after cleaning the path:"
+              ls -al /usr/src/{{ .Values.model.name }}
               {{- if and .Values.init.s3.enabled }}
               apk add --update aws-cli
               aws s3 cp --recursive {{ .Values.init.s3.bucketURL }} /usr/src/{{ .Values.model.name }}
               {{- else }}
               apk add --update git-lfs
               git clone --progress --depth=1 https://{{ if and .Values.model.hf_user .Values.model.hf_token }}{{ .Values.model.hf_user }}:{{ .Values.model.hf_token }}@{{ end }}huggingface.co/{{ .Values.model.organization }}/{{ .Values.model.name }} /usr/src/{{ .Values.model.name }}
+              echo "Cloning Successfully Finished. May start Main container"
               {{- end }}
           volumeMounts:
             - name: model-storage
